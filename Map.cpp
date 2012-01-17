@@ -16,7 +16,7 @@
 #include <cmath>
 #include "toolbox/random.h"
 
-/** Coordinates are packed by left-shifting the x-value 0x10 steps (half a 32-bit word) and adding the y-value. 
+/** Coordinates are packed by left-shifting the x-value 0x10 steps (half a 32-bit word) and adding the y-value.
  *  For simplicity in this step, all values are passed and returned as unsigned int. This packing method has the
  *  benefit of having x-values in the most significant bytes; therefore an ordered list of coordinates will be
  *  in such a way that looking them up in order gives a row-first traversal of the map.
@@ -68,12 +68,14 @@ BioSim::Cell::Cell(ArchCell *type) {
 char BioSim::Cell::cellName() {
   return archetype->name();
 }
+
 /** This function returns the ammount of available feed for the Cell.
  *  @return The feed ammount in the Cell.
  */
 double BioSim::Cell::graze() {
   return feed;
 }
+
 /** This function, given a desired ammount, returns the actual ammount of feed availiable to a feeding Animal, and subtracts it from the Cell.
  *  @param ammount The desired ammount of feed.
  *  @return The available ammount of feed.
@@ -201,9 +203,9 @@ void BioSim::Cell::regrow() {
  *  it needs to be initialized with BioSim::Map::initArch() or BioSim::Map::initSpec() and BioSim::Map::init(), in that order.
  */
 BioSim::Map::Map() : param_reader_(COMMENT_CHAR) {
-  param_reader_.register_param("alpha", _alpha);					       
-  param_reader_.register_param("fmax_sav", _fmax_sav);		       
-  param_reader_.register_param("fmax_jngl", _fmax_jngl);		       
+  param_reader_.register_param("alpha", _alpha);
+  param_reader_.register_param("fmax_sav", _fmax_sav);
+  param_reader_.register_param("fmax_jngl", _fmax_jngl);
 }
 
 BioSim::Map::~Map() {
@@ -219,7 +221,7 @@ BioSim::Map::~Map() {
  */
 void BioSim::Map::initArch(const std::string &cellarch) {
   param_reader_.read(cellarch);  // reads file & sets values
-  
+
   archetypes['H'] = BioSim::ArchCell('H',0.0,0,0);
   archetypes['S'] = BioSim::ArchCell('S',_alpha,_fmax_sav,1);
   archetypes['J'] = BioSim::ArchCell('J',1.0,_fmax_jngl,1);
@@ -287,7 +289,7 @@ void BioSim::Map::init(const std::string &geography) {
 	if (_rows * _cols) break;
 	if (mapstream.eof())
       break;
-    else if ( mapstream.fail() ) 
+    else if ( mapstream.fail() )
       throw std::runtime_error("Map::init(): read error");
   }
   std::vector<unsigned int> tmpAdrMap;
@@ -306,7 +308,7 @@ void BioSim::Map::init(const std::string &geography) {
       _fullAdrMap.push_back(&(cells[coord]));
       tmpAdrMap.push_back(coord);
     }
-  }  
+  }
   for (std::vector<unsigned int>::iterator iter = tmpAdrMap.begin(); iter != tmpAdrMap.end(); iter++) {
     cells[(*iter)].neighbours(candidatesAt(*iter));
   }
@@ -419,7 +421,7 @@ std::vector<BioSim::Animal *> BioSim::Cell::breed(std::vector<BioSim::Species*> 
     std::vector<Animal*> theseBeasts = cellMates(*iter);
     int largeN = theseBeasts.size();
     std::vector<Animal*>::iterator beastIter;
-    for (beastIter = theseBeasts.begin(); beastIter != theseBeasts.end(); beastIter++) { 
+    for (beastIter = theseBeasts.begin(); beastIter != theseBeasts.end(); beastIter++) {
       double birthchance = (*iter)->birthChance((*beastIter),largeN);
       Animal *offspring = NULL;
       if ((toolbox::randomGen().drand() < birthchance)) {
@@ -443,7 +445,7 @@ std::vector<BioSim::Cell*> BioSim::Map::candidatesAt(unsigned int coord) {
   return candidatesAt(x, y);
 }
 
-/** Determines whether an Animal can be added to the Cell. 
+/** Determines whether an Animal can be added to the Cell.
  *  @return True if an Animal could be added to the Cell.
  */
 bool BioSim::Cell::addAnimal() { return archetype->live(); }
@@ -451,7 +453,7 @@ bool BioSim::Cell::addAnimal() { return archetype->live(); }
 /** Adds the Animal to the Cell.
  *  @param beast A pointer to the Animal to add.
  *  @return True if the animal is successfully added to the cell.
- */ 
+ */
 bool BioSim::Cell::addAnimal(Animal *beast) {
   if (!archetype->live()) return false;
   habitants.insert(beast);
@@ -470,7 +472,7 @@ std::vector<BioSim::Animal *> BioSim::Cell::animals() {
   return std::vector<BioSim::Animal *>(habitants.begin(),habitants.end());
 }
 
-/** 
+/**
  *  @param allcells Indicates whether a mapMap of all Map Cells is wanted.
  *  @return A vector containing packed coordinates as produced by BioSim::coordPack().
  */
@@ -497,7 +499,7 @@ void BioSim::Map::initMapImageBuffer() {
   png_color blackColor = {0,0,0};
   png_size_t  colBytes = (imageCols * 3); // Each pixel is 3 bytes in size.
   png_bytep  blackLine = (png_bytep) calloc(colBytes,sizeof(png_byte));
-  
+
   std::vector<Cell*>::iterator mapMapIter = _fullAdrMap.begin();
 
   for (int i = 0; i < imageRows; i++) {
@@ -581,14 +583,14 @@ png_color BioSim::Cell::foodDensity() {
       retval.green = 0;
     }
   }
+
   return retval;
-  
 }
 
 /** This function updates the map by writing color fields to it to represent food and animal densities.
- *  
+ *
  */
-void BioSim::Map::updateMapImageBuffer() {  
+void BioSim::Map::updateMapImageBuffer() {
   std::vector<Cell*>::iterator mapMapIter = _fullAdrMap.begin();
   while (mapMapIter != _fullAdrMap.end()) {
     png_color adense = (*mapMapIter)->animalDensity();
@@ -597,7 +599,7 @@ void BioSim::Map::updateMapImageBuffer() {
       int x,y;
       x = (*mapMapIter)->x_pos();
       y = (*mapMapIter)->y_pos();
-      
+
       for (int i = 3; i <=  6; i++) {
         memcpy(&mapImageBuffer[y*13+3][((x*13+i)*3)],&adense,3);
       }
@@ -610,6 +612,7 @@ void BioSim::Map::updateMapImageBuffer() {
     mapMapIter++;
   }
 }
+
 /// This function frees the mapImageBuffer.
 void BioSim::Map::destroyMapImageBuffer() {
   png_uint_32 imageRows = (_rows * 13) + 1; // Each square is 12 pixels tall, separated by 1px black lines.
@@ -621,6 +624,7 @@ void BioSim::Map::destroyMapImageBuffer() {
   free(mapImageBuffer[0]);
   free(mapImageBuffer);
 }
+
 /** This function writes the current map information to the file name given. It should be noted that the PNG reports, while being somewhat
  *  inaccurate, are also the fastest to write out and smallest in on-disk size, in despite and because of Z_BEST_COMPRESSION.
  *  @param fname The filename to which the report should be written.

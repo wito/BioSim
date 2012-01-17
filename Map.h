@@ -16,10 +16,10 @@
 #endif
 
 namespace BioSim {
-  
+
   class Animal;
   class Species;
-  
+
   unsigned int coordPack (unsigned int x, unsigned int y); ///< @brief Packs coordinates for map lookup. @ingroup BioSim
   void coordUnpack (unsigned int coord, unsigned int &x, unsigned int &y); ///< @brief Unpacks lookup values into an euclidian context. @ingroup BioSim
   /** @brief Encapsulates archetypal qualities of geography cells.
@@ -127,6 +127,4 @@ namespace BioSim {
     void destroyMapImageBuffer(); ///< @brief Destroys and frees the map data.
 #endif
   };
-
-
 }

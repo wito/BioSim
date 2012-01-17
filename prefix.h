@@ -12,7 +12,7 @@
 
 #define BIOSIM_PNG
 /**< @brief Declares that the application should be built with PNG support.
- *   
+ *
  *   Requires libpng (commonly package libpng-dev).
  *   This define can be commented out in order to compile BioSim without PNG support.
  */
@@ -23,7 +23,7 @@
 // This define controls the program behaviour in certain situations.
 #ifndef BIOSIM_STD
 /** @brief Declares that BioSim should be compiled in extended mode.
- *  
+ *
  *  Currently this affects the default comment character and handling of invocations with 0 file names.
  */
 #define BIOSIM_EXT

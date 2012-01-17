@@ -33,7 +33,7 @@ namespace BioSim {
     std::list<Species> species; ///< @brief A list of the Species in the Simulation.
     std::set<Animal *> animals;  ///< @brief A list of the Animals in the Simulation.
     int _year;              ///< @brief The current Simulation year.
-    std::string _cells;     ///< @brief The pathname for the ArchCell.par file. 
+    std::string _cells;     ///< @brief The pathname for the ArchCell.par file.
     std::string _cellSpec;  ///< @brief The pathname for an ArchCell.spec file.
     std::string _geography; ///< @brief The pathname for the Map.geo file.
     std::string _prey;      ///< @brief The pathname for an Animal.pop file.

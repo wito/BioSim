@@ -32,7 +32,7 @@ BioSim::Simulation::Simulation() : param_reader_(COMMENT_CHAR) {
   param_reader_.register_param("UtdataStamme", dumpsite);
   param_reader_.register_param("DumpDyrInterval", inter_animal,0);
   param_reader_.register_param("DumpPopInterval", inter_pop,0);
-  param_reader_.register_param("DumpForInterval", inter_feed,0);  
+  param_reader_.register_param("DumpForInterval", inter_feed,0);
   param_reader_.register_param("DumpPNGInterval", inter_png,0); // This is included for compatibility; if compiled without PNG support, the keyword in .sim files will simply be ignored.
 }
 
@@ -62,17 +62,17 @@ void BioSim::Simulation::init(const std::string &parameters) {
   } else {
     throw std::runtime_error("Malformed .sim file: No valid cell spec.");
   }
-  
+
   // All genera are added to a single array for genus creation.
   genera.push_back(_prey);
   genera.push_back(_pred);
-  
+
   std::list<std::string>::iterator iter = genera.begin();
   while (iter != genera.end()) {
     initSpecies(*iter);
     iter++;
   }
-  
+
   // Reads and vivifies populæ from .pop files.
   iter = populae.begin();
   while (iter != populae.end()) {
@@ -81,10 +81,8 @@ void BioSim::Simulation::init(const std::string &parameters) {
   }
 
   createOutputDir();
-  
-  // Opens the .dat report.
-  openReport_dat();
 
+  openReport_dat();
 }
 
 /** This function is analogous to main(); once basic setup is completed, it can be called, and it performs all the work that the simulation is ever expected to perform.
@@ -129,7 +127,7 @@ void BioSim::Simulation::step() {
   }
   // Step 3: Wandering
   // Step x: regrowth
-  /// @par Wandering and regrowth.  
+  /// @par Wandering and regrowth.
   /// All the cells of the map where animals might reside are gone through in random order, and in each cell all Animals attempts to wander.
   /// At the same time, each cell is asked to regrow its graze.
   std::vector<Cell*> cells = geography.mapMap();
@@ -153,16 +151,16 @@ void BioSim::Simulation::step() {
     animals.insert(newBeasts.begin(),newBeasts.end());
   }
   /// @par Sustenance
-  /// Finally, all the animals are gone throught in order from most fit to least fit, herbivores first; and each animal eats its fill. 
+  /// Finally, all the animals are gone throught in order from most fit to least fit, herbivores first; and each animal eats its fill.
   // Step 6: Sustenance
   std::vector<Animal *>::iterator fbiter,fbound;
   std::vector<Animal *> feedBeasts(animals.begin(),animals.end());
   std::sort(feedBeasts.begin(),feedBeasts.end(),p_fit);
   fbound = std::stable_partition(feedBeasts.begin(),feedBeasts.end(),part_pred);
-  
+
   int pred = 0;
   int prey = 0;
-  
+
   std::vector<Animal*> food;
   fbiter = feedBeasts.begin();
   while (fbiter != feedBeasts.end()) {
@@ -182,7 +180,7 @@ void BioSim::Simulation::step() {
     }
     fbiter++;
   }
-  
+
   std::cout << "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
   std::cout << "År:"
             << std::setw(5) << _year << " bytte: "
@@ -293,7 +291,7 @@ bool BioSim::Simulation::readPopulation(const std::string &population) {
     }
     if (popstream.eof())
       break;
-    else if ( popstream.fail() ) 
+    else if ( popstream.fail() )
       throw std::runtime_error("Simulation::readPopulation(): read error");
   }
   while (popstream.good()) {
@@ -313,7 +311,7 @@ bool BioSim::Simulation::readPopulation(const std::string &population) {
       }
     }
   }
-  
+
   return true;
 }
 
@@ -342,6 +340,8 @@ bool BioSim::Simulation::createOutputDir() {
     repath += *it + "/";
     mkdir(repath.c_str(), 0777);
   }
+
+  return true;
 }
 
 /// @return True if the stream is open and good.
@@ -389,7 +389,7 @@ bool BioSim::Simulation::writeReport_dyr () {
     if (!(++y % x)) report_dyr << std::endl;
     if (!report_dyr.good()) return false;
   }
-  
+
   report_dyr << COMMENT_CHAR << " antall celler: " << y << std::endl;
   report_dyr.close();
   return true;
@@ -414,7 +414,7 @@ bool BioSim::Simulation::writeReport_for () {
     if (!(++y % x)) report_for << std::endl;
     if (!report_for.good()) return false;
   }
-  
+
   report_for << COMMENT_CHAR << " antall celler: " << y << std::endl;
   report_for.close();
   return true;
@@ -450,8 +450,8 @@ bool BioSim::Simulation::writeReport_pop(bool unified) {
     if (!report_pop.good()) return false;
   }
   report_pop.close();
+
   return true;
-  
 }
 
 /** @param os An output stream to write to.
@@ -464,10 +464,10 @@ std::ostream& BioSim::Simulation::reportPopulation(std::ostream &os) {
   int pred_s = 0;
   int prey_o = 0;
   int pred_o = 0;
-  
+
   bool pred;
   char cellType;
-  
+
   std::set<Animal*>::iterator iter = animals.begin();
   while (iter != animals.end()) {
     pred = (*iter)->genus()->predator();
@@ -485,10 +485,10 @@ std::ostream& BioSim::Simulation::reportPopulation(std::ostream &os) {
     }
     iter++;
   }
-  
-  return os 
+
+  return os
     << std::setw(5) << _year
-    << std::setw(8) << prey_j 
+    << std::setw(8) << prey_j
     << std::setw(8) << pred_j
     << std::setw(8) << prey_s
     << std::setw(8) << pred_s

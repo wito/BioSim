@@ -7,9 +7,9 @@
 #include <string>
 
 /** @mainpage
- *  
+ *
  *  @section intro_sec Compilation and installation
- *  
+ *
  *  To build and install, in a terminal execute:
  *  @code
  *  # make
@@ -95,7 +95,7 @@ int main (int argc, char * const argv[]) {
       filenames.push_back(std::string(argv[i]));
     }
   }
-  
+
   if (filenames.size() == 0) {
     /** The behaviour in the case of 0 filenames differs between standard and extended BioSim:
      *  In standard BioSim, the user will be asked to supply a filename;

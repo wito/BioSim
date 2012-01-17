@@ -203,7 +203,7 @@ Animal::~Animal() {
 /** This function increases the weight of the Animal.
  *  @param delta_w The ammount by which the Animal should fatten.
  */
-void Animal::fatten(double delta_w) {  
+void Animal::fatten(double delta_w) {
   _vekt += delta_w;
   _fitness = ANIMAL_INV;
 }
@@ -213,14 +213,13 @@ void Animal::fatten(double delta_w) {
  *  @return True if prey was eaten.
  */
 bool Animal::eat(Animal* prey) {
-  
   double phi_pred = this->fitness();
   double phi_prey = prey->fitness();
   double delta_phi_max = isa->deltaPhiMax();
   double delta_phi = phi_pred - phi_prey;
-  
+
   double catch_chance;
-  
+
   if (phi_pred <= phi_prey) {
     catch_chance = 0.0;
   } else if (delta_phi_max > delta_phi && delta_phi > 0) {
@@ -228,7 +227,7 @@ bool Animal::eat(Animal* prey) {
   } else {
     catch_chance = 1.0;
   }
-  
+
   bool eaten = (toolbox::randomGen().drand() < catch_chance);
   return eaten;
 }
@@ -239,7 +238,7 @@ bool Animal::eat(Animal* prey) {
  */
 std::vector<Animal*> BioSim::Species::feed(Animal *beast) {
   std::vector<Animal*> retval;
-  
+
   if (predatory) { // For predatory Animals
     std::vector<Animal*> cellmates = beast->location()->animals();
     std::vector<Animal*>::iterator iter = cellmates.begin();
@@ -248,9 +247,7 @@ std::vector<Animal*> BioSim::Species::feed(Animal *beast) {
         if (beast->eat(*iter)) {
           beast->fatten(_beta*(*iter)->weight());
           retval.push_back(*iter);
-        } else {
         }
-      } else {
       }
       iter++;
     }
@@ -259,6 +256,7 @@ std::vector<Animal*> BioSim::Species::feed(Animal *beast) {
     beast->fatten(_beta*grass);
     retval.push_back(beast);
   }
+
   return retval;
 }
 
@@ -353,6 +351,7 @@ double BioSim::Species::fitness(double weight, int age) {
 bool BioSim::Species::canBreed(double weight) {
   return (weight >= (_v_min + birthloss()));
 }
+
 /// @return A pointer to the Cell representing the location of the Animal.
 BioSim::Cell* Animal::location() {
   return _loci;

@@ -22,10 +22,10 @@ namespace BioSim {
    *  @ingroup BioSim
    */
   double func_q (double x,double x_half, double phi,bool posneg);
-  
+
   class Animal;
   class Cell;
-  
+
   /** @brief Describes archetypal qualities of animals.
    *  @ingroup BioSim
    */
@@ -66,7 +66,7 @@ namespace BioSim {
     bool die(double beastPhi);              ///< @brief Determines death or no death. @note Should be named death()?
     bool willWander(double beastPhi);       ///< @brief Determines whether Animal will wander.
   };
-    
+
   /** @brief Describes individual animals.
    *  @ingroup BioSim
    */
@@ -98,7 +98,7 @@ namespace BioSim {
     Species *genus();               ///< @brief Returns a pointer to the Species of the Animal.
     bool wander();       ///< @brief Wanders animal.
   };
-  
+
   /** @brief Helper operator for report writing.
    *  @ingroup BioSim
    */
