@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="no" lang="no">
+  <head>
+    <title>BioSim &mdash; Løsningsskisse</title>
+    <style type="text/css">
+      a:link {
+        text-decoration:none;
+      }
+      a:hover {
+        text-decoration:underline;
+      }
+      h1,h2 {
+        text-align:right;
+      }
+      h1 {
+        margin-bottom:0;
+        color:white;
+        background-color:black;
+        padding-right:0.5em;
+      }
+      h2 {
+        margin-top:0;
+      }
+      h3 {
+        border-bottom:2px solid black;
+      }
+      h4 {
+        border-bottom:1px solid black;
+      }
+      address {
+        text-align:right;
+        margin-top:0;
+        margin-bottom:0;
+      }
+      pre {
+        border:1px solid blue;
+        background-color:azure;
+        margin-left:3em;
+        margin-right:3em;
+      }
+      pre .classname {
+        color:purple;
+      }
+      pre .typename {
+        color:firebrick;
+      }
+      pre .function {
+        color:darkolivegreen;
+        font-weight:bold;
+      }
+      pre .directive {
+        font-weight:bold;
+      }
+      pre .literal {
+        color:blue;
+      }
+      pre .variable {
+        color:gray;
+        font-weight:bold;
+      }
+      pre .comment {
+        color:green;
+      }
+      div.footnotes {
+        margin-top:2em;
+      }
+      ol#index {
+      }
+    </style>
+  </head>
+  <body>
+    <h1>BioSim</h1>
+    <h2>Problemanalyse og løsningsskisse</h2>
+    <address><a href="mailto:williham.totland@student.umb.no">Williham Totland</a></address>
+    <ol id="index">
+      <li><a href="#analysis">Problemanalyse</a></li>
+      <li><a href="#draft">Løsningskisse</a></li>
+      <li><a href="#pseudo">Pseudoklasser</a></li>
+      <li><a href="#sim">Simulering &mdash; Årssyklus</a></li>
+      <li><a href="#report">Rapportskriving</a></li>
+      <li><a href="#note">Implementasjonsnotater</a></li>
+    </ol>
+    <h3 id="analysis">Problemanalyse</h3>
+    <p>
+      Hovedmålet er å simulere populasjonsdynamikk mellom 2 dyrearter R og B; ett rovdyr og en planteeter <abbr title="eller også">el.o.</abbr> byttedyr. Disse to dyreartene består av individer som beveger seg mellom celler i et kart, hvor hver celletype representerer ett terreng som gir en viss mengde mat til byttedyrene.
+    </p>
+    <h3 id="draft">Løsningskisse</h3>
+    <p>Representasjon av bytte-/rovdyr og kartcelletyper i programatisk sammenheng har flere muligheter:</p>
+    <h4>Kart/kartceller</h4>
+    <p>Rundt implementasjon av kart og kartceller har man flere forskjellige valgmuligheter i metode.</p>
+    <ol style="list-style-type:lower-latin">
+      <li>Dyrenes posisjon kan betegnes av et koordinatpar hos dyret og en tabell over celletyper/posisjon hos kartet.</li>
+      <li>Celletypene kan betegnes ved "smarte" celler, som underklasser av en "grunncelle", med celleattributter satt som klassemedlemmer.</li>
+      <li>Celler kan defineres med en kunnskap om hva slags celle de er, hvor denne kunnskapen, eller "erkecellen" for en celletype er definert som en separat klasse med egne egenskaper, hvor hver celletype har en instans av "erkecelle"-klassen.</li>
+    </ol>
+    <p>
+      I denne implementasjonen har jeg valgt å bruke metode (c), da denne gir fleksibilitet til å definere nøyaktig så mange celletyper man trenger, og også til å implementere oppoverkompatibilitet med nye celletyper der man trenger det. 
+    </p>
+    <h4>Dyr/arter</h4>
+    <p>Også rundt dyr og dyrearter har man flere implementasjonsvalg.</p>
+    <ol style="list-style-type:lower-latin">
+      <li>Dyrene kan implementeres som to separate klasser. Da likheten mellom de to typene dyr er overveiende, er ikke dette noen god løsning.</li>
+      <li>Dyrene kan implementeres som to underklasser av en felles overklasse. Dette har det problemet at man kun kan kjøre simuleringer med maksimalt én byttedyr-art og én rovdyrart. (Dette er i tråd med spesifikasjonen; men under testing av programmet kan man ønske å sammenligne to byttedyrarter i konkurranse.)</li>
+      <li>Dyrene kan implementeres som én enkelt klasse, med en auxiller "erkedyr"-klasse, hvor hvert dyr inneholder en peker til en instans av erkedyrklassen, som så er ansvarlig for å holde rede på hva dyret er.</li>
+    </ol>
+    <p>
+      I denne implementasjonen har jeg valgt å bruke metode (c). Dette gjør at man der det er ønskelig kan behandle alle dyr som dyr, og at dyrene selv kan skille på hva de er, til tross for at de alle er av samme klasse. (Dette gir en svak form for duck-typing, som i dette tilfellet er ønskelig, da man godt vet at alle dyr i simuleringen "kvekker".) I tillegg inneholder hvert dyr en peker til sin egen celle, som lar dyret finne artsfeller for formering, og byttedyr for eting, og vet også hvor det er uten å vite hvor det er.
+    </p>
+    <h3 id="pseudo">Pseudoklasser</h3>
+    <p>For alle eksemplene antar man de nødvendige using-setningene.</p>
+    <h4>Dyr</h4>
+    <p>Grunnklassen i simuleringen, Dyr, kan vha. en enkel struktur beskrives:</p>
+    <pre>
+    <span class="classname">Dyr</span> {
+      <span class="classname">Art</span>    *<span class="variable">hvaerjeg</span>;
+      <span class="classname">Celle</span>  *<span class="variable">hvorerjeg</span>;
+      <span class="typename">double</span>  <span class="variable">vekt</span>;
+      <span class="typename">int</span>     <span class="variable">alder</span>;
+    }
+    </pre>
+    <p>
+      Disse fire elementene beskriver all informasjon som gir mening for dyret å inneholde. Art inneholder så følgende struktur:
+    </p>
+    <pre>
+    <span class="classname">Art</span> {
+      <span class="typename">double</span> <span class="variable">artsparameter_1</span>;
+        .
+        .
+        .
+      <span class="typename">double</span> <span class="variable">artsparameter_n</span>;
+    
+      <span class="function">fitness</span>(<span class="variable">vekt</span>, <span class="variable">alder</span>);
+    }
+    </pre>
+    <p>
+      I denne modellen er ting som fitness en egenskap hos <em>arten</em>; man spør arten om hvor "fit" et dyr av sin art er, gitt en alder og en vekt.
+    </p>
+    <h4>Celler</h4>
+    <p>
+      Den samme modellen kan utvides til kartceller. I denne strukturen vet ikke cellen egentlig hvor den er, men den vet hvilke celler som er tilstøtende, hvilke dyr som finnes der den er, og hvor mye for (om noe) den har. Dette gir følgende datamedlemstruktur:
+    </p>
+    <pre>
+    <span class="classname">Celle</span> {
+      <span class="classname">Terreng</span>       *<span class="variable">type</span>;
+      <span class="typename">double</span>         <span class="variable">fôr</span>;
+      <span class="typename">vector</span>&lt;<span class="classname">Dyr</span>*>   <span class="variable">innvånere</span>;
+      <span class="typename">vector</span>&lt;<span class="classname">Celle</span>*> <span class="variable">naboer</span>;
+    }
+    </pre>
+    <p>Tilsvarende har terreng-klassen følgende struktur:</p>
+    <pre>
+    <span class="classname">Terreng</span> {
+      <span class="typename">double</span> <span class="variable">terrengparameter_1</span>;
+        .
+        .
+        .
+      <span class="typename">double</span> <span class="variable">terrengparameter_n</span>;
+    
+      <span class="function">gjenvekst</span>(<span class="variable">fôr</span>);
+    }
+    </pre>
+    <p>Igjen spør Cellen sin egen "erkecelle" eller terrengtype om viktige ting i behandling av sin egen oppførsel.</p>
+    <h4>Kart</h4>
+    <p>Med denne informasjonen kan man så definere en pseudoklasse for Kart:</p>
+    <pre>
+    <span class="classname">Kart</span> {
+      <span class="typename">list</span>&lt;<span class="classname">Terreng</span>>         <span class="variable">terrengtyper</span>;
+      <span class="typename">map</span>&lt;<span class="classname">Celle</span>,<span class="typename">koordinat</span>>  <span class="variable">celler</span>;
+    
+      <span class="function">celle</span>(<span class="typename">koordinat</span>);
+    }
+    </pre>
+    <p>
+      I denne sammenhengen blir cellekoordinater (x,y) pakket sammen i en enkelt int, for å unngå en situasjon hvor man bruker en høynivåstruktur for map-nøkkel. For å være effektivt gjøres dette med left-shift, right-shift og &amp;:
+    </p>
+    <pre>
+    <span class="function">pakk</span>(<span class="variable">x</span>, <span class="variable">y</span>) {
+      <span class="directive">return</span> ((<span class="variable">x</span> &lt;&lt; <span class="literal">0x10</span>) + <span class="variable">y</span>);
+    }
+    </pre>
+    <pre>
+    <span class="function">pakkOpp</span>(<span class="variable">koord</span>, &amp;<span class="variable">x</span>, &amp;<span class="variable">y</span>) {
+      <span class="variable">x</span> = (<span class="variable">koord</span> >> <span class="literal">0x10</span>);
+      <span class="variable">y</span> = (<span class="variable">koord</span> &amp; <span class="literal">0xFFFF</span>);
+    }
+    </pre>
+    <h4>Simulering</h4>
+    <p>
+      I tillegg pakkes hele simuleringen inn i en klasse, hvor hver instans er et uavhengig element. Ved å kategorisk unngå static-variabler, kan man dermed forsikre seg om at ikke bare kan man kjøre flere simuleringer etter hverandre, man kan også kjøre flere simuleringer samtidig<a id="eno" href="#one">¹</a>. En pseudoklasse kan se ut som følger:
+    </p>
+    <pre>
+    <span class="classname">Simulering</span> {
+      <span class="classname">Kart</span>      <span class="variable">kart</span>;
+      <span class="typename">list</span>&lt;<span class="classname">Dyr</span>> <span class="variable">dyr</span>;
+      <span class="typename">list</span>&lt;<span class="classname">Art</span>> <span class="variable">arter</span>;
+      <span class="typename">string</span>    <span class="variable">simuleringsparameter_1</span>;
+        .
+        .
+        .
+      <span class="typename">double</span>    <span class="variable">simuleringsparameter_n</span>;
+    
+      <span class="function">start</span>();
+    }
+    </pre>
+    <div class="footnotes">
+      <ul style="list-style:none;">
+        <li id="one"><a href="#eno">1</a>)  Da hver simulering fremsetter sitt eget slumptallsfrø<a id="owt" href="#two">²</a>, er det vanskelig å kjøre simuleringer i parallell.</li>
+        <li id="two"><a href="#owt">2</a>) I tilleg er slumptallsgeneratoren bygd på en slik måte at denne også må jobbes rundt for å kjøre flere simuleringer etter hverandre.</li>
+      </ul>
+    </div>
+    <h3 id="sim">Simulering &mdash; Årssyklus</h3>
+    <p>Årssyklusen i BioSim består av 6 elementer:</p>
+    <ol style="list-style-type:decimal">
+      <li><a href="#age">Aldring</a></li>
+      <li><a href="#age">Vekttap</a></li>
+      <li><a href="#wander">Vandring</a></li>
+      <li><a href="#age">Død</a></li>
+      <li><a href="#copulate">Formering</a></li>
+      <li><a href="#feed">Næringsopptak</a></li>
+    </ol>
+    <p>
+      Av disse kan rekkefølgen til 1,2 og 3,4 fritt omrokkeres; det spiller ingen rolle om dyret eldes før det mister vekt, og det spiller ingen om dyret vandrer eller dør først. (Skulle man vært mer realistisk, ville man kunne sagt at dyredød i en celle påvirker gjennvekst av planter, men dette er ikke dekket av denne simuleringen.)
+    </p>
+    <h4 id="age">Aldring, vekttap og død</h4>
+    <p>
+      Av fartshensyn har jeg derfor valgt å kombinere skritt 1,2, og 4; dette minimerer antallet ganger man må gå igjennom listen av dyr. Fordi man ønsker å opprettholde en kanonisk liste i simuleringen over dyr, er det nødvendig å undersøke i forhold til denne listen om dyr dør, slik at de med en gang kan fjernes fra alle relevante lister.
+    </p>
+    <pre>
+    <span class="directive">foreach</span> (<span class="classname">Dyr</span> <span class="directive">as</span> <span class="variable">dyr</span>) {
+      <span class="variable">dyr</span>.<span class="function">bli_eldre</span>();
+      <span class="directive">if</span> (<span class="variable">dyr</span>.<span class="function">død</span>())
+        <span class="classname">Dyr</span>.<span class="function">fjern</span>(<span class="variable">dyr</span>);
+    }
+    </pre>
+    <h4 id="wander">Vandring</h4>
+    <p>
+      Dyrevandring skjer ved at <em>cellene</em> gjennomgås i tilfeldig rekkefølge og inneværende dyr forsøker å vandre.
+    </p>
+    <pre>
+    <span class="directive">foreach</span> (<span class="classname">Celler</span> <span class="directive">as</span> <span class="variable">celle</span>) {
+      <span class="variable">celle</span>.<span class="function">vandre_innvånere</span>();
+      <span class="variable">celle</span>.<span class="function">gjennvekst</span>(); <span class="comment">// dette er også et naturlig sted å behandle gjennvekst i celler</span>
+    }
+    </pre>
+    <h4 id="copulate">Formering</h4>
+    <p>
+      For å kunne legge til nyfødte dyr og registrere dem hos sine respektive celler, skjer formering med hensyn på dyr.
+    </p>
+    <pre>
+    <span class="directive">foreach</span> (<span class="classname">Dyr</span> <span class="directive">as</span> <span class="variable">dyr</span>) {
+      <span class="variable">avkom</span> = <span class="variable">dyr</span>.<span class="function">formering</span>();
+      <span class="directive">if</span> (<span class="variable">avkom</span>)
+        <span class="classname">Dyr</span>.<span class="function">legg_til</span>(<span class="variable">avkom</span>);
+    }
+    </pre>
+    <p>
+      I praksis deles denne opp i to løkker, hvor avkomet legges til dyrelisten etter at alle de tilstedeværende dyrene har paret seg; dette forhindrer at nyfødte dyr blir tatt med når paring skal bestemmes.
+    </p>
+    <h4 id="feed">Næringsopptak</h4>
+    <p>
+      Ett problem med den valgte modellen er at forinntak blir en flaskehals: for å unngå dobbel bokføring blir alle dyrene lagret i samme liste; men dette fører også til at denne listen må gjennomgås to ganger under næreingsopptaket; én gang for byttedyr og én gang for rovdyr. Enkeltlistemodellen har likevel den fordelen at det bare er én liste som må sorteres for at alle dyrene skal ende opp sortert etter fitness.
+    </p>
+    <pre>
+    <span class="directive">foreach</span> (<span class="classname">Dyr</span> <span class="directive">as</span> <span class="variable">dyr</span>) {
+      <span class="variable">dyr</span>.<span class="function">spis</span>(<span class="typename">byttedyr</span>);
+    }
+    <span class="directive">foreach</span> (<span class="classname">Dyr</span> <span class="directive">as</span> <span class="variable">dyr</span>) {
+      <span class="variable">dyr</span>.<span class="function">spis</span>(<span class="typename">rovdyr</span>);
+    }
+    </pre>
+    <h4>Hushold</h4>
+    <p>
+      Fordi dyrene ikke direkte er knyttet til noen unik identifikasjon, kan ikke rovdyrenes fôringsfunksjon med letthet sende tilbake til simuleringen en enkel indikator på at et dyr skal fjernes fra hovedlisten. Dette fører til at man på slutten av en simuleringsrunde må gå igjennom dyrelisten en siste gang for å forhindre at oppspiste dyr blir telt med i <a href="#report">rapport</a>-opptelling av byttedyr.
+    </p>
+    <pre>
+    <span class="directive">foreach</span> (<span class="classname">Dyr</span> <span class="directive">as</span> <span class="variable">dyr</span>) {
+      <span class="directive">if</span> (<span class="variable">dyr</span>.<span class="function">oppspist</span>())
+        <span class="classname">Dyr</span>.<span class="function">fjern</span>(<span class="variable">dyr</span>);
+    }
+    </pre>
+    <h3 id="report">Rapportskriving</h3>
+    <p>
+      Programmet skriver i hovedsak ut to typer rapporter: <a href="yearly">Årsrapporter</a> (.pop, .for, .dyr) og <a href="total">totalrapport</a> (.dat).
+    </p>
+    <h4 id="yearly">Årsrapport</h4>
+    <p>
+      Årsrapporten er en innlysende flaskehals, da de for hver gang de skriver trenger å åpne, skrive til og lukke en fil, i tillegg til at mange av dem må gjøre en del utregninger.
+    </p>
+    <h4 id="total">Totalrapport</h4>
+    <p>
+      Totalrapporten er best håndtert ved at programmet når simuleringen starter åpner en fil som inneholder rapporten, og beholder fil-deskriptoren gjennom hele simuleringen. På denne måten er rapporten alltid klar til skriving, og man sparer overhead i forbindelse med rapportoppdatering.
+    </p>
+    <h3 id="note">Implementasjonsnotater</h3>
+    <h4 id="inheritance">Hvorfor ikke arv?</h4>
+    <p>
+      I denne konteksten fører arv (Dyr -> Byttedyr,Rovdyr; Terreng -> Ørken, Savanne, etc…) til at man behøver unødig mye klasser og kode-duplisering. Det fører også til at hele implementasjonen blir ufleksibel. Å legge til nye dyrearter, eller å ha flere byttedyr-/rovdyr-arter, blir unødvendig vanskelig. Ved å bruke "liksomarv" og funksjonsdelegering kan man gjøre ting som å ha flere dyrearter, eller mer konfigurerbare celletyper.
+    </p>
+    <h4 id="dynamics">Dynamisk minnehåndtering</h4>
+    <p>
+      Listene med celler, dyrearter, etc… kunne også vært implementert som vektorer av dynamisk allokerte objekter. Da dette innfører et unødig kompleksitetsnivå uten synlige fordeler, blir ikke dette gjort.
+    </p>
+  </body>
+</html>

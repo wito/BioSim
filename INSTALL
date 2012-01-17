@@ -1,0 +1,5 @@
+Before you attempt to compile, make sure to run
+
+doxygen
+
+in the current directory and read the notes on prefix.h.

@@ -1,0 +1,23 @@
+# Eksemplarisk parameterfil til jeger i BioSim prosjektet.
+# Verdiene i denne filene er IKKE testet.
+#
+# Hans E Plesser, 2006-03-15
+
+v_fod          5
+beta           0.5
+sigma          0.2
+v_min          3
+a_halv         30
+phi_alder      0.15
+v_halv_under   6
+phi_under      0.3
+v_halv_over    40
+phi_over       0.1
+mu             0.4
+gamma          0.1
+zeta           1.5
+omega          0.04
+DeltaPhiMax    0.2
+
+
+

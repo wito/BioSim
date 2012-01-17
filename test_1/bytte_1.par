@@ -1,0 +1,20 @@
+# Eksemplarisk parameterfil til bytte i BioSim prosjektet.
+# Verdiene i denne filene er IKKE testet.
+#
+# Hans E Plesser, 2006-03-15
+
+v_fod          8
+beta           0.4
+sigma          0.05
+v_min          5
+a_halv         40
+phi_alder      0.1
+v_halv_under   10
+phi_under      0.5 
+v_halv_over    60
+phi_over       0.2
+mu             0.1
+gamma          0.1
+zeta           2
+omega          0.01
+F              10

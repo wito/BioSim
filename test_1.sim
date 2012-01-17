@@ -1,0 +1,20 @@
+#!/usr/bin/BioSim
+Geografi        test_1/Bjarnoya.geo
+
+CelleSpec 	test_1/cell.spec
+BytteParameter  test_1/bytte_1.par
+RovdyrParameter test_1/rovdyr_1.par
+
+Populasjon      test_1/test_1.pop
+
+StartAar        0
+SluttAar        200
+
+SlumptallFroe   55
+
+UtdataStamme    data/test_1/test_1
+
+DumpDyrInterval   10
+DumpPopInterval   10
+DumpForInterval   10
+DumpPNGInterval   1
