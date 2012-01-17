@@ -12,6 +12,7 @@
 
 #ifdef BIOSIM_PNG
 #include <png.h>
+#include <zlib.h>
 #endif
 
 namespace BioSim {

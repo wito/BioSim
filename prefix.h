@@ -8,13 +8,14 @@
 #define PREFIX_H
 
 #ifdef DOXYGEN
+#endif //DOXYGEN
+
 #define BIOSIM_PNG
 /**< @brief Declares that the application should be built with PNG support.
  *   
  *   Requires libpng (commonly package libpng-dev).
  *   This define can be commented out in order to compile BioSim without PNG support.
  */
-#endif //DOXYGEN
 
 // Uncomment this line to compile with % as the comment character
 //#define BIOSIM_STD

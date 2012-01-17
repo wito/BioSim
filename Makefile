@@ -1,7 +1,10 @@
+export CPLUS_INCLUDE_PATH = /usr/X11/include
+export LIBRARY_PATH = /usr/X11/lib
+
 objects = Animal.o BioSim.o main.o Map.o filename.o random.o read_parameters.o skip_comment.o
 
 BioSim : $(objects)
-	g++  -lpng -o BioSim $(objects)
+	g++ -lpng -o BioSim $(objects)
 BioSim-no-png : $(objects)
 	g++ -o BioSim $(objects)
 documentation : Doxyfile
