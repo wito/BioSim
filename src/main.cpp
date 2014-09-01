@@ -97,21 +97,10 @@ int main (int argc, char * const argv[]) {
   }
 
   if (filenames.size() == 0) {
-    /** The behaviour in the case of 0 filenames differs between standard and extended BioSim:
-     *  In standard BioSim, the user will be asked to supply a filename;
-     *  In extended BioSim, the user will be informed of the program usage and the program will exit with an error.
-     */
-#ifndef BIOSIM_EXT
-    std::cout << "Ingen fil oppgitt!" << std::endl;
-    std::cout << "Vennligst skriv inn et filnavn: " << std::flush;
-    std::string filename;
-    std::cin >> filename;
-    filenames.push_back(filename);
-#else
     std::cout << "Usage: BioSim filename [filename...]" << std::endl;
     exit(EXIT_FAILURE);
-#endif
   }
+
   int retval = EXIT_SUCCESS; // exit code
   std::vector<std::string>::iterator iter = filenames.begin();
   while (iter != filenames.end()) {
