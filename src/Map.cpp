@@ -569,8 +569,8 @@ png_color BioSim::Cell::animalDensity() {
  */
 png_color BioSim::Cell::foodDensity() {
   png_color retval = {0,0xff,0};
-  double high = 0.0;
-  if (high = archetype->maxfeed()) {
+  double high = archetype->maxfeed();
+  if (high) {
     double density = feed/high;
     int colorPart = (int) ceil(0x1FE * density);
     if (colorPart < 0xff) {
