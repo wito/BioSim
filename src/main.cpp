@@ -1,7 +1,7 @@
 #include "prefix.h"
 #include <iostream>
 #include <iomanip>
-#include "toolbox/random.h"
+#include "random.h"
 #include "BioSim.h"
 #include <vector>
 #include <string>

@@ -10,7 +10,7 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
-#include "toolbox/random.h"
+#include "random.h"
 #include "Map.h"
 
 using BioSim::Animal;

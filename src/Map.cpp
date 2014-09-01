@@ -7,7 +7,7 @@
  */
 
 #include "Map.h"
-#include "toolbox/skip_comment.h"
+#include "skip_comment.h"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <cmath>
-#include "toolbox/random.h"
+#include "random.h"
 
 /** Coordinates are packed by left-shifting the x-value 0x10 steps (half a 32-bit word) and adding the y-value.
  *  For simplicity in this step, all values are passed and returned as unsigned int. This packing method has the

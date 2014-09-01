@@ -14,7 +14,7 @@
 #endif
 
 #include <vector>
-#include "toolbox/read_parameters.h"
+#include "read_parameters.h"
 #include <set>
 
 namespace BioSim {

@@ -1,41 +1,44 @@
-export CPLUS_INCLUDE_PATH = /usr/X11/include
-export LIBRARY_PATH = /usr/X11/lib
+# Copyleft Williham Totland <williham.totland@gmail.com>
+#
+# This file is in the public domain, or under Creative Commons' CC0 where required by law.
 
-CXX = clang++
+CC=clang++
+CFLAGS=-Wall -Iinc -I/usr/X11/include
+LFLAGS=-L/usr/X11/lib -L./inc
+LDFLAGS=-lpng
 
-objects = Animal.o BioSim.o main.o Map.o filename.o random.o read_parameters.o skip_comment.o
+TDIR=
+TODIR=
+ODIR=obj
+DDIR=obj
 
-BioSim : $(objects)
-	$(CXX) -lpng -o BioSim $(objects)
-BioSim-no-png : $(objects)
-	$(CXX) -o BioSim $(objects)
+SRC_DIR=src
+
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+HEADERS = $(wildcard $(SRC_DIR)/*.h)
+_OBJS = $(SOURCES:$(SRC_DIR)/%.cpp=%.o)
+
+_TEST = 
+TEST = $(patsubst %,$(TODIR)/%.test,$(_TEST))
+
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJS))
+
+BioSim: $(ODIR) $(OBJ)
+	$(CC) -o $@ $(OBJ) $(LFLAGS) $(LDFLAGS)
+
 documentation : Doxyfile
 	doxygen >/dev/null
 
-Animal.o: Animal.cpp Animal.h toolbox/random.h Map.h prefix.h
+$(ODIR):
+	mkdir -p $(ODIR)
 
-BioSim.o: BioSim.cpp BioSim.h Animal.h Map.h toolbox/skip_comment.h toolbox/random.h toolbox/filename.h prefix.h
+$(ODIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CC) -MMD -c -g -std=c++11 -o $@ $< $(CFLAGS)
 
-main.o: main.cpp toolbox/random.h BioSim.h Animal.h toolbox/read_parameters.h Map.h prefix.h
-
-Map.o: Map.cpp Map.h toolbox/read_parameters.h Animal.h prefix.h
-
-filename.o: toolbox/filename.cpp toolbox/filename.h
-	$(CXX) -c toolbox/filename.cpp
-
-random.o: toolbox/random.cpp toolbox/random.h
-	$(CXX) -c toolbox/random.cpp
-
-read_parameters.o: toolbox/read_parameters.cpp toolbox/read_parameters.h toolbox/skip_comment.h
-	$(CXX) -c toolbox/read_parameters.cpp
-
-skip_comment.o: toolbox/skip_comment.cpp toolbox/skip_comment.h
-	$(CXX) -c toolbox/skip_comment.cpp
-
-install: BioSim documentation
-	cp BioSim /usr/bin/BioSim
-	rm -rf /usr/share/doc/BioSim
-	cp -R doc/html /usr/share/doc/BioSim
+.PHONY: clean
 
 clean:
-	rm -f BioSim $(objects)
+	rm -rf obj doc BioSim
+
+-include $(SOURCES:$(SRC_DIR)/%.cpp=$(DEPDIR)/%.P)
+-include ${OBJ:.o=.d}

@@ -6,7 +6,7 @@
  *  @ingroup BioSim
  */
 #include "prefix.h"
-#include "toolbox/read_parameters.h"
+#include "read_parameters.h"
 #include <vector>
 #include <set>
 

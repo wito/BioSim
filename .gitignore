@@ -1,4 +1,5 @@
-*.o
+obj/
+doc/
 .DS_Store
-/BioSim
+BioSim
 data

@@ -9,10 +9,10 @@
 #include "BioSim.h"
 #include <fstream>
 #include <iomanip>
-#include "toolbox/read_parameters.h"
-#include "toolbox/skip_comment.h"
-#include "toolbox/random.h"
-#include "toolbox/filename.h"
+#include "read_parameters.h"
+#include "skip_comment.h"
+#include "random.h"
+#include "filename.h"
 #include <cstdlib>
 #include <algorithm>
 
