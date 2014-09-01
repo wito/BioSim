@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "toolbox/skip_comment.h"
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 #include "Animal.h"
 #include <stdexcept>
@@ -479,7 +480,7 @@ std::vector<BioSim::Animal *> BioSim::Cell::animals() {
 std::vector<BioSim::Cell*> BioSim::Map::mapMap(bool allcells) {
   if (allcells) return _fullAdrMap;
   std::vector<Cell*>::iterator iter;
-  random_shuffle(_adrMap.begin(), _adrMap.end());
+  std::random_shuffle(_adrMap.begin(), _adrMap.end());
   return _adrMap;
 }
 
